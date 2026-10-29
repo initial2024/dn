@@ -14,10 +14,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm test
-      - name: Verify recovered files
+      - name: Build and test source against frozen deployed artifact
+        run: npm test
+      - name: Verify editable source files
         run: |
           test -s src/index.html
           test -s src/worker.mjs
           test -s src/embedded-html.mjs
-# No automated deployment, credentials, DNS, or production mutations.
+  public-http-smoke:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs: source-and-unit
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only HTTPS smoke for the approved domain
+        run: node scripts/smoke-production.mjs
+# No auto-deployment. No credentials or route mutations.
