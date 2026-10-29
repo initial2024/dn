@@ -1,0 +1,11 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {gzipSync} from 'node:zlib';
+const root=new URL('../',import.meta.url);
+const html=readFileSync(new URL('src/index.html',root));
+const b64=gzipSync(html,{level:9,mtime:0}).toString('base64');
+const getHtml=`let html; async function pageHtml() {if(html === undefined) html=await new Response(new Blob([Uint8Array.from(atob('${b64}'), c=>c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); return html;}`;
+const original=readFileSync(new URL('src/worker.mjs',root),'utf8');
+if(!original.includes("import html from './embedded-html.mjs';")||!original.includes("new Response(html,{headers:"))throw new Error('unexpected source; refusing to bundle');
+const source=original.replace("import html from './embedded-html.mjs';",getHtml).replace('new Response(html,{headers:','new Response(await pageHtml(),{headers:');
+mkdirSync(new URL('dist/',root),{recursive:true});
+writeFileSync(new URL('dist/worker.deployment.mjs',root),source);
