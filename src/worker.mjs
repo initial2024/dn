@@ -1,6 +1,6 @@
 // Personal Device Lab Worker. Site is read from bundled HTML at build time.
 import html from './embedded-html.mjs';
-const VERSION='0.1.0', MAX_BODY=262144;
+const VERSION='0.2.0', MAX_BODY=262144;
 const headers={'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer','permissions-policy':'camera=(), microphone=(), geolocation=(), interest-cohort=()','x-frame-options':'DENY','cross-origin-resource-policy':'same-origin','content-security-policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"};
 const send=(data,status=200,extra={})=>new Response(JSON.stringify(data),{status,headers:{...headers,'content-type':'application/json; charset=utf-8',...extra}});
 function observation(value,source,limit='仅当前请求的观测；不构成可信硬件证明',status=value==null?'UNKNOWN':'PASS'){return {value:value??'不可观察',source,limit,status}}
