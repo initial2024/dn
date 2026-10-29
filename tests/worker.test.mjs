@@ -4,7 +4,7 @@ import worker,{observe} from '../worker.mjs';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 function req(path,opts={}) {return new Request('https://device.feiling.ccwu.cc'+path,opts)}
-test('health endpoint responds with tested version',async()=>{let r=await worker.fetch(req('/api/health'));assert.equal(r.status,200);let x=await r.json();assert.equal(x.version,'0.2.0');assert.equal(x.persistence,'none')});
+test('health endpoint responds with tested version',async()=>{let r=await worker.fetch(req('/api/health'));assert.equal(r.status,200);let x=await r.json();assert.equal(x.version,'0.2.1');assert.equal(x.persistence,'none')});
 test('HTML includes live detection interface',async()=>{let r=await worker.fetch(req('/'));assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);let html=await r.text();assert.ok(html.length>5000);assert.ok(!/https?:\/\/.*(?:google-analytics|doubleclick)/.test(html))});
 test('unrecognized route 404',async()=>{assert.equal((await worker.fetch(req('/not-a-route'))).status,404)});
 test('no IP by default',()=>{let x=observe(req('/api/observe',{headers:{'cf-connecting-ip':'203.0.113.9'}}));assert.equal(x.observations['出口 IP'].status,'UNKNOWN');assert.ok(!JSON.stringify(x).includes('203.0.113.9'))});

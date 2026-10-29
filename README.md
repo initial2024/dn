@@ -2,9 +2,9 @@
 
 **Site:** https://device.feiling.ccwu.cc/  
 **Source:** https://github.com/initial2024/dn  
-**Cloudflare Worker:** `personal-device-lab` · Version `0.2.0`
+**Cloudflare Worker:** `personal-device-lab` · Version `0.2.1`
 
-Independent, privacy-conscious browser and network observation site for real Android phones, Windows browsers, Android WebView, and explicitly authorized test environments. No third-party fingerprint SDK, cross-site tracker or app-side server database. v0.2.0 adds optional browser-local pseudonymous IDs, only after explicit opt-in.
+Independent, privacy-conscious browser and network observation site for real Android phones, Windows browsers, Android WebView, and explicitly authorized test environments. No third-party fingerprint SDK, cross-site tracker or app-side server database. v0.2.1 adds optional browser-local pseudonymous IDs, only after explicit opt-in.
 
 ## Features
 - Real browser-reported properties, WebGL, display, touch, browser feature support and synthetic storage probes.
@@ -19,7 +19,7 @@ Independent, privacy-conscious browser and network observation site for real And
 - `src/worker.mjs` — complete, editable Cloudflare Worker source.
 - `scripts/embed-html.mjs` — generate build-time HTML module.
 - `scripts/make-bundle.mjs` — generate self-contained Worker module.
-- `worker.mjs` — frozen self-contained v0.2.0 module **actually uploaded** on 2026-10-29.
+- `worker.mjs` — frozen self-contained v0.2.1 module **actually uploaded** on 2026-10-29.
 - `tests/` — local behavior and reproducibility tests.
 - `docs/DEPLOYMENT.md` — account isolation, rollback and verification rules.
 - `docs/DSH_NATIVE_DIAGNOSTIC_SPEC.md` — *planned only*, native diagnostic bridge contract.
@@ -42,6 +42,6 @@ Domain `device.feiling.ccwu.cc` was attached through the Cloudflare API to accou
 
 Do not use this site to bypass third-party anti-fraud measures or impersonate an officially attested device. DSH native UID/Binder/file permissions and Android device integrity remain `UNKNOWN` until independently authorized native proofs are collected.
 
-## v0.2.0 visitor ID controls
+## v0.2.1 visitor ID controls
 
 Enable only by checking the privacy option. The browser generates a random 128-bit localStorage ID, shows a masked suffix, and includes the full ID in explicitly exported JSON reports. Disabling scrubs the identifier from locally saved reports; resetting rotates it. No identity request header, cookie, tracking SDK or server-side visitor database was added. A repeated ID demonstrates shared/copied browser storage, **not** physical-device authenticity or DSH isolation.
