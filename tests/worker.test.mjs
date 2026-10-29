@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import worker,{observe} from '../worker.mjs';
+import {readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+function req(path,opts={}) {return new Request('https://device.feiling.ccwu.cc'+path,opts)}
+test('health endpoint responds with tested version',async()=>{let r=await worker.fetch(req('/api/health'));assert.equal(r.status,200);let x=await r.json();assert.equal(x.version,'0.1.0');assert.equal(x.persistence,'none')});
+test('HTML includes live detection interface',async()=>{let r=await worker.fetch(req('/'));assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);let html=await r.text();assert.ok(html.length>5000);assert.ok(!/https?:\/\/.*(?:google-analytics|doubleclick)/.test(html))});
+test('unrecognized route 404',async()=>{assert.equal((await worker.fetch(req('/not-a-route'))).status,404)});
+test('no IP by default',()=>{let x=observe(req('/api/observe',{headers:{'cf-connecting-ip':'203.0.113.9'}}));assert.equal(x.observations['出口 IP'].status,'UNKNOWN');assert.ok(!JSON.stringify(x).includes('203.0.113.9'))});
+test('explicit IP opt in only current echo',()=>{let x=observe(req('/api/observe?show_ip=1',{headers:{'cf-connecting-ip':'203.0.113.9'}}));assert.equal(x.observations['出口 IP'].value,'203.0.113.9');assert.equal(x.serverPersistence,false)});
+test('Cloudflare-only attributes remain unknown in Node',()=>{let x=observe(req('/api/observe'));assert.equal(x.observations['TLS 版本'].status,'UNKNOWN')});
+test('request  headers do not become trusted attestation',()=>{let x=observe(req('/api/observe',{headers:{'user-agent':'iPhone'}}));assert.match(x.observations['Header: user-agent'].limit,/客户端可修改/)});
+test('synthetic echo works',async()=>{let r=await worker.fetch(req('/api/echo',{method:'POST',body:'TEST-ONLY'}));assert.equal(r.status,200);assert.equal((await r.json()).bytes,9)});
+test('oversized echo rejected',async()=>{let r=await worker.fetch(req('/api/echo',{method:'POST',body:'a'.repeat(262145)}));assert.equal(r.status,413)});
+test('multipart required for upload',async()=>{let r=await worker.fetch(req('/api/upload',{method:'POST',body:'demo'}));assert.equal(r.status,415)});
+test('synthetic upload not stored',async()=>{let f=new FormData();f.append('f',new Blob(['not-personal']),'synthetic.txt');let r=await worker.fetch(req('/api/upload',{method:'POST',body:f}));assert.equal(r.status,200);assert.equal((await r.json()).persisted,false)});
+test('chunk stream completes',async()=>{let r=await worker.fetch(req('/api/stream'));assert.equal(r.status,200);assert.equal(await r.text(),'start\nchunk\nend\n')});
+test('WebSocket rejects requests without upgrade',async()=>{assert.equal((await worker.fetch(req('/ws'))).status,426)});
+test('restored source is real HTML',()=>{let x=readFileSync(new URL('../src/index.html',import.meta.url),'utf8');assert.match(x,/<!doctype html>/i);assert.ok(x.length>10000)});
+test('source restore matches bundled gzip exactly',()=>{let b=readFileSync(new URL('../worker.mjs',import.meta.url),'utf8');let m=b.match(/atob\('([A-Za-z0-9+/=]+)'\)/);assert.ok(m);assert.equal(gunzipSync(Buffer.from(m[1],'base64')).toString('utf8'),readFileSync(new URL('../src/index.html',import.meta.url),'utf8'))});
