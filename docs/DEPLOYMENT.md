@@ -5,7 +5,7 @@
 - Zone: `feiling.ccwu.cc`, zone ID `943ece486639848f8efabb9ce041a27f` (active).
 - Custom Domain: `device.feiling.ccwu.cc`, domain ID `b259152d85f4d8afc17095b7bcb7d6a667b6bcee`.
 - Target Worker: `personal-device-lab`. Cloudflare Custom Domain PUT returned success and created only the new managed proxied DNS record. Prior apex/read bindings stayed unchanged in read-back.
-- Standalone Worker module source: `worker.mjs` committed to this repository.
+- Standalone Worker module source: `worker.mjs` committed to this repository (current v0.2.0).
 - Configuration / TLS ID assignment: verified through Cloudflare API, **not proof that real Android or desktop browser can reach the site**.
 
 ## Developer workflow
@@ -21,8 +21,19 @@
 - There is no KV/D1/R2 data to migrate or roll back. Client-side local reports can remain on user devices until explicitly cleared.
 
 ## Verification required after publication
-- Read `https://device.feiling.ccwu.cc/api/health` in an independent browser: require HTTP 200 and `version:0.1.0`.
+- Read `https://device.feiling.ccwu.cc/api/health` in an independent browser: require HTTP 200 and `version:0.2.0`.
 - Test `/api/observe` with the user's explicit approval and distinguish server edge observations from browser claims.
 - Capture real Android and Windows results with timestamps, report IDs and provenance; no default report persistence.
 - Native UID, filesystem/Binder restrictions, Play Integrity and DSH WebView isolation remain UNKNOWN until native evidence.
 - Current external verification from the assistant's execution sandbox failed DNS lookup; do not report HTTP or browser tests as PASS.
+
+## v0.2.0 verified release (2026-10-29)
+
+- Isolated Cloudflare Worker upload: `personal-device-lab` only; account/zone/domain unchanged.
+- GitHub PR: https://github.com/initial2024/dn/pull/1 (merged as `ca9cac8eb1f2b4ee127defcd40ba18db3356e1ca`).
+- Source artifact blob SHA: `3e3e41da8140fd41217d5d31406d4ab94b8f137f`.
+- Cloudflare API readback: Worker source contains `VERSION='0.2.0'`; pre-existing apex and reader DNS/domain associations unchanged.
+- GitHub Actions: https://github.com/initial2024/dn/actions/runs/40850380542 — source/unit 26/26 PASS; external HTTPS smoke `HTTP_SMOKE=PASS HTTPS_HOST=device.feiling.ccwu.cc HEALTH_VERSION=0.2.0 HTML_LENGTH=29605`. This confirms HTTP response and published HTML presence, not real-device browser compatibility.
+- Optional visitor ID is random 128-bit localStorage-only and enabled solely by user action. No API endpoint or server persistence is used for visitor identity. Exported JSON can contain the identifier if enabled. Disabling removes locally saved associations.
+- **Still UNKNOWN:** real Android and Windows interactive acceptance, DSH isolated UID, native Binder/FD/file/network sandbox, WebView profile separation, platform attestation.
+- Rollback to v0.1.0: retrieve reviewed previous standalone `worker.mjs` from main commit `36158612b72f365313861667800936b703862457` and redeploy **only** to `personal-device-lab` after validating source and scope. Do not change custom-domain/DNS bindings.
