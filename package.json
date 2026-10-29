@@ -4,8 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/embed-html.mjs",
+    "bundle": "npm run build && node scripts/make-bundle.mjs",
+    "test": "npm run bundle && node --test tests/*.test.mjs",
     "restore:source": "node scripts/restore-source.mjs",
-    "test": "node scripts/restore-source.mjs && node --test tests/*.test.mjs",
-    "check": "npm test"
+    "dev": "npm run build && npx wrangler dev",
+    "deploy": "npm test && npx wrangler deploy"
   }
 }
