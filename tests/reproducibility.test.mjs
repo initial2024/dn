@@ -21,6 +21,6 @@ test('editable HTML source is versioned and nonempty',()=>{
 test('editable backend avoids persistent server bindings',()=>{
  const source=text('src/worker.mjs');
  const cfg=text('wrangler.toml');
- assert.match(source,/const VERSION='0\.1\.0'/);
+ assert.match(source,/const VERSION='0\.2\.0'/);
  assert.doesNotMatch(cfg,/\bkv_namespaces\b|\bd1_databases\b|\broutes\s*=/);
 });
