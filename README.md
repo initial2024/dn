@@ -1,29 +1,42 @@
-# Personal Device Lab
+# Personal Device Lab · 真实设备环境实验室
 
-Independent browser and controlled-server environment tests for **Android, Windows, DSH WebView and authorized emulators**.
+**Site:** https://device.feiling.ccwu.cc/  
+**Source:** https://github.com/initial2024/dn  
+**Cloudflare Worker:** `personal-device-lab` · Version `0.1.0`
 
-- **Live custom domain**: https://device.feiling.ccwu.cc/
-- **Cloudflare Worker**: `personal-device-lab`
-- **Cloudflare account**: dedicated connected `个人i` account; zone `feiling.ccwu.cc`.
-- **Browser tests**: platform, viewport, WebGL, browser feature support, browser-local synthetic storage.
-- **Server tests**: own Cloudflare edge request headers/observable TLS and protocol, synthetic uploads, fetch, streaming and optional WebSocket echo.
-- **Privacy**: no third-party trackers, no application database, no persistent server-side fingerprint. Cloudflare platform logging may still exist separately.
-- **Limits**: Web browser results cannot establish genuine Android hardware, iOS identity, OS sandbox/UID or integrity attestation.
+Independent, privacy-conscious browser and network observation site for real Android phones, Windows browsers, Android WebView, and explicitly authorized test environments. No third-party fingerprint SDK, tracker, app-side server database, or persistent server fingerprint identifiers.
 
-## Source layout
-- `worker.mjs` — self-contained deployed module, with the tested HTML bundled into the module.
-- `tests/` — Node.js regression tests for the module's HTTP behavior.
-- `docs/` — deployment/recovery and the proposed native DSH bridge contract.
-- `schema/` — versioned report data format.
+## Features
+- Real browser-reported properties, WebGL, display, touch, browser feature support and synthetic storage probes.
+- Cloudflare edge observation of request headers, apparent exit IP protocol, HTTP/TLS versions where supported, and optional full exit IP **only with explicit user choice**.
+- Own-backend synthetic Fetch, file upload, chunk streaming and WebSocket echo.
+- Browser-local JSON report export/import, human-readable comparison, print/PDF and optional user-controlled local history.
+- Explicit `PASS` / `FAIL` / `UNKNOWN` semantics. Browser JavaScript **cannot attest** genuine hardware or Android sandbox isolation.
 
-The standalone module is the actual source artifact deployed at Cloudflare on 2026-10-29. The complete editable source tree (original `src/index.html`, `src/worker.mjs`, build helpers) is also included in the downloadable versioned release ZIP provided in the project conversation. Do not assume the single-file module is easy to maintain as-is: before further feature work, restore and commit the editable HTML source.
+## Repository source (editable)
+- `src/index.html` — complete, editable responsive browser UI.
+- `src/worker.mjs` — complete, editable Cloudflare Worker source.
+- `scripts/embed-html.mjs` — generate build-time HTML module.
+- `scripts/make-bundle.mjs` — generate self-contained Worker module.
+- `worker.mjs` — frozen self-contained v0.1.0 module **actually uploaded** on 2026-10-29.
+- `tests/` — local behavior and reproducibility tests.
+- `docs/DEPLOYMENT.md` — account isolation, rollback and verification rules.
+- `docs/DSH_NATIVE_DIAGNOSTIC_SPEC.md` — *planned only*, native diagnostic bridge contract.
+- `schema/` — machine-readable report schema.
 
-## Status
-- Cloudflare custom domain and managed DNS record: **API-confirmed**.
-- Existing root `feiling.ccwu.cc` and `read.feiling.ccwu.cc` bindings: **unchanged** during pre/post checks.
-- Node.js local regression suite: **12/12 PASS**, does **not** certify real-device behavior.
-- Real external HTTP read, Android, Windows and DSH native isolation: **UNKNOWN** until tested and evidence recorded.
-- Do not report `PASS` for attestation/UID/network/file isolation based only on JavaScript-visible attributes.
+## Build & tests
+Requires Node.js 22+.
 
-## Boundaries
-No modifications to Temp Mail, English reader, InternalBeyond, or any third-party endpoint. All testing uses synthetic records only. User must explicitly start tests; no background fingerprint persistence.
+```bash
+npm test
+npm run dev
+```
+
+`npm test` validates live backend behavior in Node and rebuilds the self-contained module; the rebuilt artifact must be **byte-for-byte identical** to the frozen `worker.mjs`. CI runs tests on every push/PR, without deployment credentials.
+
+`npm run restore:source` can reconstruct the original editable source from the frozen Worker as a recovery operation; it **overwrites** `src/index.html` and `src/worker.mjs`. Do not run it during ordinary development or after editing those files.
+
+## Production and security boundary
+Domain `device.feiling.ccwu.cc` was attached through the Cloudflare API to account `个人i` (account ID `a440d52410a88bb658b59b48ac10e7fd`), Worker `personal-device-lab`. Pre/post API checks confirmed the old root/read domain bindings were unchanged. CI success certifies only tests; actual Android/Windows/DSH testing remains separately evidence-gated.
+
+Do not use this site to bypass third-party anti-fraud measures or impersonate an officially attested device. DSH native UID/Binder/file permissions and Android device integrity remain `UNKNOWN` until independently authorized native proofs are collected.
