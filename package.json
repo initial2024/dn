@@ -1,0 +1,11 @@
+{
+  "name": "personal-device-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "restore:source": "node scripts/restore-source.mjs",
+    "test": "node scripts/restore-source.mjs && node --test tests/*.test.mjs",
+    "check": "npm test"
+  }
+}
