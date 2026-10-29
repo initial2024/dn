@@ -22,7 +22,7 @@ jobs:
           test -s src/worker.mjs
           test -s src/embedded-html.mjs
   public-http-smoke:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: source-and-unit
     timeout-minutes: 3

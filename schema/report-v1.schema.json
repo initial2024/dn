@@ -25,7 +25,16 @@
       "type": "string"
     },
     "privacy": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "serverPersistence": {
+          "type": "boolean"
+        },
+        "visitorIdLocalOnly": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
     },
     "items": {
       "type": "array",
@@ -66,6 +75,11 @@
           }
         }
       }
+    },
+    "visitorId": {
+      "type": "string",
+      "pattern": "^pdl_[0-9a-f]{32}$",
+      "description": "Optional explicitly enabled browser-local random ID; not hardware attestation. Exportable only with report consent."
     }
   },
   "additionalProperties": true
