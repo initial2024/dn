@@ -9,7 +9,7 @@ async function request(path){
 try{
  const h=await request('/api/health');
  const data=JSON.parse(h.body);
- if(data.version!=='0.1.0'||data.status!=='ok'||data.persistence!=='none')throw new Error('unexpected health payload');
+ if(data.version!=='0.2.0'||data.status!=='ok'||data.persistence!=='none')throw new Error('unexpected health payload');
  const page=await request('/');
  if(!page.response.headers.get('content-type')?.includes('text/html'))throw new Error('unexpected HTML type');
  if(!page.body.includes('Personal Device Lab')||!page.body.includes('开始基础检测')||page.body.length<10000)throw new Error('invalid homepage');
