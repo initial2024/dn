@@ -35,4 +35,18 @@ jobs:
           node-version: '22'
       - name: Read-only HTTPS smoke for the approved domain
         run: node scripts/smoke-production.mjs
+  private-intake-smoke:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs: source-and-unit
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify dedicated upload entry from external network
+        run: node intake/smoke.mjs
 # No auto-deployment. No credentials or route mutations.
