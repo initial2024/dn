@@ -1,0 +1,8 @@
+name = "personal-device-lab"
+main = "src/worker.mjs"
+compatibility_date = "2026-10-29"
+workers_dev = true
+# No routes, zone, KV, D1 or production bindings.
+# The already-approved custom domain is managed independently.
+[observability]
+enabled = false
